@@ -1,0 +1,137 @@
+Posição	Campo	                           Descrição
+1	Bitmap secundário	           Indica presença de campos 65–128
+2	Número do cartão	           PAN – Primary Account Number
+3	Código de processamento	           Tipo de transação
+4	Valor da transação	           Valor em centavos
+5	Valor da liquidação	           Usado em transações internacionais
+6	Valor da liquidação do cartão	   Similar ao campo 5
+7	Data/Hora da transmissão	   YYMMDDhhmmss
+8	Valor da taxa	                   Taxas aplicáveis
+9	Valor da conversão	           Moeda estrangeira
+10	Valor da taxa de conversão	   Taxa da moeda
+11	Número de sequência da transação   Número incremental para identificar transações
+12	Hora local da transação	           Hhmmss
+13	Data local da transação	           MMDD
+14	Data de validade do cartão	   MMYY
+15	Data de liquidação	           MMDD
+16	Data de conversão	           MMDD
+17	Data de captura	                   MMDD
+18	Código da categoria comerciante	   Identifica o tipo de negócio
+19	Código do país de aquisição	   Código do país do terminal
+20	Código da instituição de origem	   Código do país da instituição
+21	Código da instituição receptora	   Código do país da adquirente
+22	Modo de entrada do cartão	   Ex: chip, tarja, manual
+23	Número de entrada do cartão	   Sequência ou tipo de leitura
+24	Código da rede	                   Código da rede ou identificação de operador
+25	Condição da transação	           Ex: internacional, offline
+26	Código do PIN	                   Indica se PIN foi usado
+27	Valor de compra	                   Valor bruto da compra
+28	Taxas adicionais	           Valores específicos de tarifas
+29	Valor de liquidação adicional	   Valor complementar
+30	Valor de recebimento	           Valores creditados
+31	Endereço do adquirente	           Informações sobre o comerciante
+32	Identificador da adquirente	   Código da empresa que recebe a transação
+
+Posição	Campo	                           Descrição
+33	Identificador da emissora	   Código da instituição emissora
+34	Identificação do cartão	           Dados do cartão (ex: track 2)
+35	Trilha 2 do cartão	           Dados codificados do cartão
+36	Trilha 3 do cartão	           Menos comum
+37	Número de referência da transação  Número único para rastrear transações
+38	Código de autorização	           Código fornecido na autorização
+39	Código de resposta	           Resultado da transação
+40	Dados do serviço	           Tipo de serviço prestado
+41	ID do terminal	                   Identificação do ponto de venda
+42	ID do comerciante	           Código do comerciante
+43	Nome/Endereço do comerciante	   Nome, cidade, estado, etc.
+44	Dados adicionais	           Informações suplementares
+45	Dados do cartão codificados	   Ex: track 1
+46	Dados adicionais para resposta	   Complemento do campo 44
+47	Dados adicionais para aquisição	   Dados suplementares da adquirente
+48	Dados privados	                   Dados personalizados ou privados
+49	Código da moeda	                   Moeda da transação
+50	Moeda da liquidação	           Moeda usada na liquidação
+51	Moeda de recebimento	           Moeda recebida pelo comerciante
+52	PIN encriptado	                   Informação do PIN protegida
+53	Controle de segurança	           Dados para autenticação
+54	Dados adicionais financeiros	   Juros, taxas, parcelamentos
+55	Dados específicos EMV	           Chip EMV
+56	Dados adicionais do emissor	   Informações específicas do banco
+57	Reservado	                   Uso reservado
+58	Dados de texto	                   Informações complementares
+59	Dados adicionais de terminal	   Informações do terminal
+60	Dados de uso reservado pelo ISO	   Ex: versões de software
+61	Dados de uso reservado pelo banco  Dados próprios do banco
+62	Dados privados	                   Informações do comerciante ou adquirente
+63	Dados reservados pelo adquirente   Ex: identificadores internos
+64	Hash de segurança (MAC)	           Código de integridade da mensagem
+
+* Definição da área da mensagem ISO 8583
+01 MENSAGEM-ISO.
+   05 MTI           PIC X(04).
+   05 BITMAP-HEX    PIC X(16).
+   05 DADOS-ISO.
+      10 CAMPO-01   PIC X(16).  *> Bitmap Secundário (opcional)
+      10 CAMPO-02   PIC X(19).  *> PAN
+      10 CAMPO-03   PIC X(06).  *> Processing Code
+      10 CAMPO-04   PIC X(12).  *> Amount, Transaction
+      10 CAMPO-05   PIC X(12).  *> Amount, Settlement
+      10 CAMPO-06   PIC X(12).  *> Amount, Cardholder Billing
+      10 CAMPO-07   PIC X(10).  *> Transmission Date & Time
+      10 CAMPO-08   PIC X(08).  *> Amount, Cardholder Billing Fee
+      10 CAMPO-09   PIC X(08).  *> Conversion Rate, Settlement
+      10 CAMPO-10   PIC X(08).  *> Conversion Rate, Cardholder Billing
+      10 CAMPO-11   PIC X(06).  *> System Trace Audit Number
+      10 CAMPO-12   PIC X(06).  *> Time, Local Transaction
+      10 CAMPO-13   PIC X(04).  *> Date, Local Transaction
+      10 CAMPO-14   PIC X(04).  *> Date, Expiration
+      10 CAMPO-15   PIC X(04).  *> Date, Settlement
+      10 CAMPO-16   PIC X(04).  *> Date, Conversion
+      10 CAMPO-17   PIC X(04).  *> Date, Capture
+      10 CAMPO-18   PIC X(04).  *> Merchant Type
+      10 CAMPO-19   PIC X(03).  *> Acquiring Institution Country Code
+      10 CAMPO-20   PIC X(03).  *> PAN Extended Country Code
+      10 CAMPO-21   PIC X(03).  *> Forwarding Institution Country Code
+      10 CAMPO-22   PIC X(03).  *> Point of Service Entry Mode
+      10 CAMPO-23   PIC X(03).  *> Application PAN Sequence Number
+      10 CAMPO-24   PIC X(03).  *> Network International Identifier (NII)
+      10 CAMPO-25   PIC X(02).  *> Point of Service Condition Code
+      10 CAMPO-26   PIC X(02).  *> Point of Service Capture Code
+      10 CAMPO-27   PIC X(01).  *> Authorizing Identification Response Length
+      10 CAMPO-28   PIC X(08).  *> Amount, Transaction Fee
+      10 CAMPO-29   PIC X(08).  *> Amount, Settlement Fee
+      10 CAMPO-30   PIC X(08).  *> Amount, Transaction Processing Fee
+      10 CAMPO-31   PIC X(08).  *> Amount, Settlement Processing Fee
+      10 CAMPO-32   PIC X(11).  *> Acquiring Institution Identification Code
+      10 CAMPO-33   PIC X(11).  *> Forwarding Institution Identification Code
+      10 CAMPO-34   PIC X(28).  *> PAN Extended
+      10 CAMPO-35   PIC X(37).  *> Track 2 Data
+      10 CAMPO-36   PIC X(104). *> Track 3 Data
+      10 CAMPO-37   PIC X(12).  *> Retrieval Reference Number
+      10 CAMPO-38   PIC X(06).  *> Authorization Identification Response
+      10 CAMPO-39   PIC X(02).  *> Response Code
+      10 CAMPO-40   PIC X(03).  *> Service Restriction Code
+      10 CAMPO-41   PIC X(08).  *> Card Acceptor Terminal Identification
+      10 CAMPO-42   PIC X(15).  *> Card Acceptor Identification Code
+      10 CAMPO-43   PIC X(40).  *> Card Acceptor Name/Location
+      10 CAMPO-44   PIC X(25).  *> Additional Response Data
+      10 CAMPO-45   PIC X(76).  *> Track 1 Data
+      10 CAMPO-46   PIC X(999). *> Additional Data - ISO
+      10 CAMPO-47   PIC X(999). *> Additional Data - National
+      10 CAMPO-48   PIC X(999). *> Additional Data - Private
+      10 CAMPO-49   PIC X(03).  *> Currency Code, Transaction
+      10 CAMPO-50   PIC X(03).  *> Currency Code, Settlement
+      10 CAMPO-51   PIC X(03).  *> Currency Code, Cardholder Billing
+      10 CAMPO-52   PIC X(16).  *> PIN Data
+      10 CAMPO-53   PIC X(16).  *> Security Related Control Information
+      10 CAMPO-54   PIC X(120). *> Additional Amounts
+      10 CAMPO-55   PIC X(999). *> ICC System Related Data
+      10 CAMPO-56   PIC X(999). *> Reserved ISO
+      10 CAMPO-57   PIC X(999). *> Reserved National
+      10 CAMPO-58   PIC X(999). *> Reserved National
+      10 CAMPO-59   PIC X(999). *> Reserved National
+      10 CAMPO-60   PIC X(999). *> Reserved Private
+      10 CAMPO-61   PIC X(999). *> Reserved Private
+      10 CAMPO-62   PIC X(999). *> Reserved Private
+      10 CAMPO-63   PIC X(999). *> Reserved Private
+      10 CAMPO-64   PIC X(08).  *> Message Authentication Code (MAC)
