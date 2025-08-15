@@ -1,0 +1,143 @@
+       IDENTIFICATION DIVISION.                                                 
+       PROGRAM-ID. VALCNPJ.                                                     
+       AUTHOR. JOSUE CAMPELO/JANIO PARENTE.                                     
+       DATA DIVISION.                                                           
+       WORKING-STORAGE SECTION.                                                 
+       01 WS-CNPJ.                                                              
+           05 WS-CNPJ-DIGIT  PICTURE X(14).                                     
+           05 WS-CNPJ-VALIDO PICTURE X VALUE "N".                               
+                                                                                
+       01 WS-SOMATORIO PICTURE 9(5) VALUE 0.                                    
+       01 WS-PESO PICTURE 9(2).                                                 
+       01 WS-DV1 PICTURE 9.                                                     
+       01 WS-DV2 PICTURE 9.                                                     
+      *                                                                         
+       01 WS-MULTIPLICACAO.                                                     
+           05 WS-MULTIPLICACAO-RESULTADO PICTURE 9(5).                          
+                                                                                
+       01 WS-CONSTANTES.                                                        
+           05 WS-CONSTANTE-PESO1 PIC X(12) VALUE '543298765432'.                
+           05 WS-CONSTANTE-PESO2 PIC X(13) VALUE '6543298765432'.               
+                                                                                
+       01 WS-RESTO PICTURE 9(2).                                                
+       01 WS-QUOCIENTE PICTURE 9(5).                                            
+       01 WS-LETRA     PICTURE X.                                               
+       01 WS-LETRA-NUM PICTURE 9(5).                                            
+                                                                                
+       PROCEDURE DIVISION.                                                      
+           display 'INFORME CNPJ A SER VALIDADO'.                               
+           ACCEPT WS-CNPJ-DIGIT.                                                
+      *    MOVE 'JOSUE029000180' TO WS-CNPJ-DIGIT.                              
+      *    MOVE 'QPZBRB5LYXWW93' TO WS-CNPJ-DIGIT.                              
+      *    DISPLAY 'INFORME O CNPJ COM OS DIGITOS'.                             
+      *    ACCEPT WS-CNPJ-DIGIT FROM CONSOLE.                                   
+           PERFORM VALIDA-DIGITO-VERIFICADOR1.                                  
+           PERFORM VALIDA-DIGITO-VERIFICADOR2.                                  
+           IF WS-DV1 = FUNCTION NUMVAL(WS-CNPJ(13:1)) AND                       
+              WS-DV2 = FUNCTION NUMVAL(WS-CNPJ(14:1))                           
+               MOVE "S" TO WS-CNPJ-VALIDO                                       
+           END-IF                                                               
+           DISPLAY WS-CNPJ-DIGIT " CNPJ Valido? " WS-CNPJ-VALIDO                
+           STOP RUN.                                                            
+                                                                                
+       VALIDA-DIGITO-VERIFICADOR1.                                              
+           MOVE 0 TO WS-SOMATORIO.                                              
+           PERFORM VARYING WS-PESO FROM 1 BY 1 UNTIL WS-PESO > 12               
+               PERFORM VERIFICA-NUMERO                                          
+      *        DISPLAY WS-LETRA-NUM                                             
+               COMPUTE WS-MULTIPLICACAO-RESULTADO =                             
+                   WS-LETRA-NUM *                                               
+                   FUNCTION NUMVAL(WS-CONSTANTE-PESO1(WS-PESO:1))               
+               ADD WS-MULTIPLICACAO-RESULTADO TO WS-SOMATORIO                   
+           END-PERFORM                                                          
+           DIVIDE WS-SOMATORIO BY 11 GIVING WS-QUOCIENTE REMAINDER              
+                                                         WS-RESTO               
+           IF WS-RESTO = 0 OR WS-RESTO = 1                                      
+               MOVE 0 TO WS-DV1                                                 
+           ELSE                                                                 
+               COMPUTE WS-DV1 = 11 - WS-RESTO                                   
+           END-IF.                                                              
+                                                                                
+       VALIDA-DIGITO-VERIFICADOR2.                                              
+           MOVE 0 TO WS-SOMATORIO.                                              
+           PERFORM VARYING WS-PESO FROM 1 BY 1 UNTIL WS-PESO > 13               
+               PERFORM VERIFICA-NUMERO                                          
+      *        DISPLAY WS-LETRA-NUM                                             
+               COMPUTE WS-MULTIPLICACAO-RESULTADO =                             
+                   WS-LETRA-NUM *                                               
+                   FUNCTION NUMVAL(WS-CONSTANTE-PESO2(WS-PESO:1))               
+               ADD WS-MULTIPLICACAO-RESULTADO TO WS-SOMATORIO                   
+           END-PERFORM                                                          
+           DIVIDE WS-SOMATORIO BY 11 GIVING WS-QUOCIENTE REMAINDER              
+                                                         WS-RESTO               
+           IF WS-RESTO = 0 OR WS-RESTO = 1                                      
+               MOVE 0 TO WS-DV2                                                 
+           ELSE                                                                 
+               COMPUTE WS-DV2 = 11 - WS-RESTO                                   
+           END-IF.                                                              
+                                                                                
+       VERIFICA-NUMERO.                                                         
+           IF WS-CNPJ(WS-PESO:1) IS NUMERIC                                     
+               MOVE WS-CNPJ(WS-PESO:1)                                          
+                    TO WS-LETRA-NUM                                             
+           ELSE                                                                 
+               MOVE WS-CNPJ(WS-PESO:1)                                          
+                    TO WS-LETRA                                                 
+                                                                                
+               EVALUATE WS-LETRA                                                
+                 WHEN "A"                                                       
+                   MOVE 17 TO WS-LETRA-NUM                                      
+                 WHEN "B"                                                       
+                   MOVE 18 TO WS-LETRA-NUM                                      
+                 WHEN "C"                                                       
+                   MOVE 19 TO WS-LETRA-NUM                                      
+                 WHEN "D"                                                       
+                   MOVE 20 TO WS-LETRA-NUM                                      
+                 WHEN "E"                                                       
+                   MOVE 21 TO WS-LETRA-NUM                                      
+                 WHEN "F"                                                       
+                   MOVE 22 TO WS-LETRA-NUM                                      
+                 WHEN "G"                                                       
+                   MOVE 23 TO WS-LETRA-NUM                                      
+                 WHEN "H"                                                       
+                   MOVE 24 TO WS-LETRA-NUM                                      
+                 WHEN "I"                                                       
+                   MOVE 25 TO WS-LETRA-NUM                                      
+                 WHEN "J"                                                       
+                   MOVE 26 TO WS-LETRA-NUM                                      
+                 WHEN "K"                                                       
+                   MOVE 27 TO WS-LETRA-NUM                                      
+                 WHEN "L"                                                       
+                   MOVE 28 TO WS-LETRA-NUM                                      
+                 WHEN "M"                                                       
+                   MOVE 29 TO WS-LETRA-NUM                                      
+                 WHEN "N"                                                       
+                   MOVE 30 TO WS-LETRA-NUM                                      
+                 WHEN "O"                                                       
+                   MOVE 31 TO WS-LETRA-NUM                                      
+                 WHEN "P"                                                       
+                   MOVE 32 TO WS-LETRA-NUM                                      
+                 WHEN "Q"                                                       
+                   MOVE 33 TO WS-LETRA-NUM                                      
+                 WHEN "R"                                                       
+                   MOVE 34 TO WS-LETRA-NUM                                      
+                 WHEN "S"                                                       
+                   MOVE 35 TO WS-LETRA-NUM                                      
+                 WHEN "T"                                                       
+                   MOVE 36 TO WS-LETRA-NUM                                      
+                 WHEN "U"                                                       
+                   MOVE 37 TO WS-LETRA-NUM                                      
+                 WHEN "V"                                                       
+                   MOVE 38 TO WS-LETRA-NUM                                      
+                 WHEN "W"                                                       
+                   MOVE 39 TO WS-LETRA-NUM                                      
+                 WHEN "X"                                                       
+                   MOVE 40 TO WS-LETRA-NUM                                      
+                 WHEN "Y"                                                       
+                   MOVE 41 TO WS-LETRA-NUM                                      
+                 WHEN "Z"                                                       
+                   MOVE 42 TO WS-LETRA-NUM                                      
+               END-EVALUATE                                                     
+           END-IF.                                                              
+       END PROGRAM VALCNPJ.                                                     
+                                                                                
