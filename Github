@@ -1,0 +1,125 @@
+
+build.yml
+
+name: Build Pipeline                # Nome do workflow exibido no GitHub Actions
+
+on:                                 # Define quando o pipeline será executado
+  push:                             # Dispara quando há push
+    branches: [ "develop", "main" ] # Apenas nessas branches
+  pull_request:                     # Também executa quando abrir PR
+
+jobs:                               # Define os jobs do pipeline
+
+  build:                            # Nome do job
+    runs-on: ubuntu-latest          # Runner onde será executado
+
+    steps:                          # Passos executados em sequência
+
+    - uses: actions/checkout@v4     # Baixa o código do repositório
+
+    - name: Setup Java              # Nome descritivo do passo
+      uses: actions/setup-java@v4   # Action oficial para instalar Java
+      with:
+        distribution: temurin       # Distribuição do Java
+        java-version: 17            # Versão Java usada
+        cache: maven                # Cache dependências Maven
+
+    - name: Run tests               # Nome do passo
+      run: mvn clean verify         # Compila + executa testes
+                                    # validate, compile, test, package e verify
+
+    - name: Login Docker            # Autentica no registry Docker
+                                    # echo envia senha sem ir p/ o login
+      run: echo ${{ secrets.DOCKER_PASS }} | docker login -u ${{ secrets.DOCKER_USER }} --password-stdin
+
+    - name: Build Image             # Cria imagem Docker p/ usuario-repositorio
+      run: docker build -t ${{ secrets.DOCKER_USER }}/springboot:${{ github.sha }} .
+
+    - name: Push Image              # Envia imagem ao registry / usuario-repositorio
+      run: docker push ${{ secrets.DOCKER_USER }}/springboot:${{ github.sha }}
+
+      ********************************************
+
+deploy.yml
+
+name: Deploy Pipeline                  # Nome do workflow
+
+on:                                     # Evento que dispara
+  workflow_dispatch:                    # Permite rodar manualmente
+  push:
+    tags:
+      - "v*"                            # Executa quando criar tag versão
+
+jobs:
+
+  deploy:
+    runs-on: ubuntu-latest              # Runner Linux
+
+    steps:
+
+    - name: Setup Kubectl               # Instala kubectl
+      uses: azure/setup-kubectl@v4
+
+    - name: Set kubeconfig              # Configura acesso ao cluster
+      run: |
+        mkdir -p $HOME/.kube            # Cria pasta kubectl(oculta)
+        echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config  # Grava credencial no config
+
+    - name: Deploy to cluster           # Passo deploy
+      run: |
+        kubectl set image deployment/springboot app=${{ secrets.DOCKER_USER }}/springboot:${{ github.sha }} # atualiza imagem
+        kubectl rollout status deployment/springboot # aguarda rollout
+
+*********************
+
+deployment.yml
+
+apiVersion: apps/v1             # Versão da API do Kubernetes
+kind: Deployment                # Tipo de recurso (implantação atualizando os pods)
+
+metadata:
+  name: springboot              # Nome do deployment
+
+spec:
+  replicas: 2                   # Quantidade de pods rodando
+                                # POD é a caixa onde vive um ou mais containers Docker
+
+  selector:
+    matchLabels:
+      app: springboot           # Label usada para identificar pods
+
+  template:                     # Template de pod
+
+    metadata:
+      labels:
+        app: springboot         # Label aplicada aos pods
+
+    spec:
+      containers:
+      - name: app               # Nome do container
+        image: springboot:latest # Imagem usada
+        ports:
+        - containerPort: 8080   # Porta exposta dentro do pod
+
+
+***************************
+
+service.yml
+
+apiVersion: v1                 # API do recurso
+kind: Service                  # Tipo Service(conecta os usários a aplicação)
+
+metadata:
+  name: springboot-serv ice     # Nome do serviço
+
+spec:
+  type: ClusterIP              # Tipo interno do cluster
+
+  selector:
+    app: springboot            # Seleciona pods com essa label
+
+  ports:
+  - port: 80                   # Porta exposta no cluster
+    targetPort: 8080           # Porta do container
+
+
